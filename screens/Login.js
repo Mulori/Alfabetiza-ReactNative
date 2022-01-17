@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, Image, Alert,  StatusBar  } from 'react-native';
 import usuarioService from '../services/UsuarioService';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import * as Animatable from 'react-native-animatable';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 import Logo from '../assets/Logo.png';
 
 export default function Login({navigation}) {
 
     const [email, setEmail] = useState(null);
     const [senha, setSenha] = useState(null);
+    const [emailErro, setEmailErro] = useState(false);
+    const [senhaErro, setSenhaErro] = useState(false);
+    const [loginErro, setloginErro] = useState(false);
 
     useEffect( () => {
       checkLogin();
@@ -28,13 +33,19 @@ export default function Login({navigation}) {
     const entrar = async () => {
 
         if(!email){
-            Alert.alert('Atenção', 'Informe o e-mail.', [{text: 'Ok',style: 'destructive', }]);
-            return;
+          setEmailErro(true);
+          return;
+        }
+        else{
+          setEmailErro(false);
         }
 
         if(!senha){
-            Alert.alert('Atenção', 'Informe a senha.', [{text: 'Ok',style: 'destructive', }]);
-            return;
+          setSenhaErro(true);
+          return;
+        }
+        else{
+          setSenhaErro(false);
         }
 
         let data = {
@@ -45,89 +56,182 @@ export default function Login({navigation}) {
         usuarioService.userLogin(data)
         .then((response) => {   
             saveLogin('@user', JSON.stringify(response.data))
-
+            setloginErro(false);
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Main'}]
             })
         })
         .catch((error) => {
-            Alert.alert('Erro', 'E-mail ou senha incorretos.', [
-            {
-                text: 'Ok',
-                style: 'destructive',
-            },
-            ]);
+          setloginErro(true);
         })
     }
 
     const register = async () => {
+        setSenhaErro(false);
+        setEmailErro(false);
+        setloginErro(false);
         navigation.push('Register')       
     }
 
   return (  
     <SafeAreaView style={styles.container} >
       <StatusBar backgroundColor='#4B0082' barStyle='ligth-content' hidden={false} />
-      <View style={styles.containerText}>
-        <Image style={styles.imageLogo} source={Logo}/>
-      </View>      
-      <TextInput 
-        style={styles.textInput}
-        placeholder='E-mail'
-        keyboardType='email-address'
-        autoCapitalize='none'
-        onChangeText={ (value) => setEmail(value)}
-      />
-      <TextInput 
-        style={styles.textInput}
-        placeholder='Senha'
-        secureTextEntry={true}
-        onChangeText={ (value) => setSenha(value)}
-      />
-  
 
-      <TouchableOpacity style={styles.button} onPress={ () => entrar()}>
-        <Text style={styles.textButton}>Entrar</Text>
-      </TouchableOpacity>
+        { !loginErro ? null : 
+            <Animatable.View 
+            animation="fadeInLeft" 
+            duration={500}
+            style={{
+              backgroundColor: '#F54803', 
+              borderRadius: 12, 
+              alignItems: 'center',
+              marginLeft: 15,
+              marginRight: 15
+            }}>
+            
+              <Text style={styles.textMsg}>Email e/ou senha incorreto(s)</Text>
+            </Animatable.View>
+        }
 
-      <View style={styles.containerText}>
-        {/* <Text style={styles.textOldPass} onPress={() => Linking.openURL('http://google.com')}>
-          Esqueci minha senha
-        </Text> */}
-        <Text style={styles.textQuestion}>Ainda não possui uma conta?</Text>
-        <Text style={styles.textLink} onPress={register}>
-          REGISTRE-SE
-        </Text>
-      </View>
+        { !emailErro ? null : 
+            <Animatable.View 
+            animation="fadeInLeft" 
+            duration={500}
+            style={{
+              backgroundColor: '#32A28C', 
+              borderRadius: 12, 
+              alignItems: 'center',
+              marginLeft: 15,
+              marginRight: 15
+            }}>
+            
+              <Text style={styles.textMsg}>Informe o e-mail.</Text>
+            </Animatable.View>
+        }
+
+        { !senhaErro ? null : 
+            <Animatable.View 
+            animation="fadeInLeft" 
+            duration={500}
+            style={{
+              backgroundColor: '#90A232', 
+              borderRadius: 12, 
+              alignItems: 'center',
+              marginLeft: 15,
+              marginRight: 15
+            }}>
+            
+              <Text style={styles.textMsg}>Informe a senha.</Text>
+            </Animatable.View>
+        }
+
+        <View style={styles.containerImage} animation="fadeInUpBig">
+          <Image style={styles.imageLogo} source={Logo}/>
+        </View> 
+        <Animatable.View style={styles.containerForms}>    
+          <Text style={styles.titleForm}>E-mail</Text> 
+          <View style={{ direction: 'row' }}>
+            <FontAwesome 
+                name="user-o"
+                size={20}
+                style={{ lineHeight: 45, color: '#05375a', fontWeight: 'bold'}}
+                  />
+            <TextInput 
+              style={styles.textInput}
+              placeholder='Seu e-mail'
+              keyboardType='email-address'
+              autoCapitalize='none'
+              placeholderTextColor="#666666"
+              onChangeText={ (value) => setEmail(value)}
+            />
+          </View>
+          
+
+          <Text style={styles.titleForm}>Senha</Text>  
+          <View style={{ direction: 'row' }}>
+            <Feather 
+                name="lock"
+                size={20}
+                style={{ lineHeight: 45, color: '#05375a', fontWeight: 'bold'}}
+                  />
+            <TextInput 
+              style={styles.textInput}
+              placeholder='Sua senha'
+              secureTextEntry={true}
+              autoCapitalize="none"
+              placeholderTextColor="#666666"
+              onChangeText={ (value) => setSenha(value)}
+            />
+          </View>
+          
       
+
+          <TouchableOpacity style={styles.button} onPress={ () => entrar()}>
+            <Text style={styles.textButton}>Entrar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.buttonSingUp} onPress={ () => register()}>
+            <Text style={styles.textButtonSingUp}>Cadastre-se</Text>
+          </TouchableOpacity>
+
+          
+        </Animatable.View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  textMsg:{
+    fontSize: 16,
+    color: '#FFF'
+  },
   container: {
     flex: 1,
     backgroundColor: '#4B0082',    
+  },
+  containerForms: {
+    flex: 3,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 30
+  },
+  titleForm:{
+    color: '#05375a',
+    fontSize: 18,
+    fontFamily: 'Georgia',
+    fontWeight: 'bold',
+  },
+  containerImage: {
+    alignItems: 'center'   
   },
   containerText: {
     alignItems: 'center'   
   },
   textInput: {
-    margin: 15,
-    fontSize: 20,
-    backgroundColor: '#FFF',
-    borderRadius: 20,    
+    fontSize: 18,
+    color: '#05375a',
+    paddingLeft: 30,
+    marginTop: -45
+  },
+  button:{
+    backgroundColor: '#4B0082', 
+    alignItems: 'center',
 
-    marginTop: 5,
+    padding: 10,
+    marginTop: 10,
     marginLeft: 15,
     marginRight: 15,
 
-    padding: 10
+    borderRadius: 15
   },
-  button:{
-    backgroundColor: '#FF8C00', 
+  buttonSingUp:{
     alignItems: 'center',
 
+    borderWidth: 1,
+    borderColor: '#4B0082',
     padding: 10,
     marginTop: 10,
     marginLeft: 15,
@@ -139,6 +243,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#FFF'
   },
+  textButtonSingUp:{
+    fontSize: 20,
+    color: '#4B0082'
+  },  
   textQuestion:{
     marginTop: 20,
     fontWeight: 'bold',
@@ -152,8 +260,10 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline'
   },
   imageLogo:{
-    marginTop: 30,
-    transform: [{scale: 0.70}]
+    marginTop: 10,
+    height: 180,
+    width: 290,
+    transform: [{scale: 0.50}]
   },
   textOldPass:{
     fontWeight: 'bold',
