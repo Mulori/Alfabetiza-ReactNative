@@ -68,7 +68,7 @@ function MyStack() {
           headerTintColor: '#fff'
         }} 
         component={Register} 
-      />
+      />      
     </Stack.Navigator>
   );
 } 

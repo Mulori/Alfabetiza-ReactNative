@@ -4,8 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Icon } from 'react-native-elements';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
 import Activity from './Activity';
@@ -32,7 +30,8 @@ function MyDrawer(){
           fontWeight: 'bold', //Set Header text style
         },
       }}
-      component={Home}/>
+      component={Home}/>      
+
       <Drawer.Screen 
       name="Grupos" 
       options={{
@@ -46,6 +45,7 @@ function MyDrawer(){
         },
       }}
       component={Group}/>
+
       <Drawer.Screen 
       name="Notificações" 
       options={{
@@ -71,7 +71,8 @@ function MyDrawer(){
           fontWeight: 'bold', //Set Header text style
         },
       }}
-      component={Notification} /> 
+      component={Configuration} /> 
+
     </Drawer.Navigator>
   );
 }
