@@ -96,7 +96,7 @@ const DrawerContent = (props) => {
                                 </Text>  
                             )}
                             style={style.item}
-                            onPress={() => {props.navigation.navigate('Grupos')}}
+                            onPress={() => {props.navigation.navigate('Grupos', { ...props })}}
                         />
                         <DrawerItem 
                             icon={() => (

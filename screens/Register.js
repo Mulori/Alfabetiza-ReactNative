@@ -146,7 +146,7 @@ export default function Register({navigation}){
                   </TouchableOpacity>
                   <View style={styles.containerText}>
                     <Image style={styles.imageLogo} source={Logo}/>
-                </View> 
+                  </View> 
                   
               </View> 
             </View>          
